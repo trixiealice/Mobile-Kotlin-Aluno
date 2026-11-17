@@ -1,5 +1,7 @@
 package com.example.helloworld
 
+import android.R.attr.x
+import android.R.attr.y
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -26,6 +28,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -86,11 +89,23 @@ import android.graphics.Rect as AndroidRect
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.zIndex
 import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.text.style.TextOverflow
+import java.text.NumberFormat
+import java.util.Locale
 
 val AliceFontFamily = FontFamily(
     Font(R.font.alice_regular, FontWeight.Normal, FontStyle.Normal)
 )
 
+data class Instituicao(
+    val nome: String,
+    val tipo: String,
+    val cidade: String,
+    val integrantes: Int,
+    val verificada: Boolean,
+    val logoRes: Int,
+    val fotoUrl: String? = null
+)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,6 +136,26 @@ class MainActivity : ComponentActivity() {
 fun CleanLiquidShowcase(modifier: Modifier = Modifier) {
 
     var textoDigitado by remember { mutableStateOf("") }
+    val alturaGrupo = 403.dp
+
+    val instituicoes = listOf(
+        Instituicao(
+            nome = "SENAI Jandira",
+            tipo = "Escola técnica",
+            cidade = "Jandira/SP",
+            integrantes = 6767,
+            verificada = true,
+            logoRes = R.drawable.senai
+        ),
+        Instituicao(
+            nome = "SENAI Jandira",
+            tipo = "Escola técnica",
+            cidade = "Jandira/SP",
+            integrantes = 6767,
+            verificada = true,
+            logoRes = R.drawable.senai
+        )
+    )
 
     val density = LocalDensity.current
     val context = LocalContext.current
@@ -151,7 +186,6 @@ fun CleanLiquidShowcase(modifier: Modifier = Modifier) {
             )
         }
 
-        // Plano de fundo
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawImage(
                 image = engine.fullResBackground,
@@ -162,10 +196,6 @@ fun CleanLiquidShowcase(modifier: Modifier = Modifier) {
             )
         }
 
-        // ====================================================================
-        // CARD PRINCIPAL COM LIQUID GLASS
-        // ====================================================================
-
         LiquidGlassSurface(
             engine = engine,
             cornerRadius = 24.dp,
@@ -175,10 +205,9 @@ fun CleanLiquidShowcase(modifier: Modifier = Modifier) {
             isInteractive = false,
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .offset(x = 20.dp, y = 205.dp)
-                .size(375.dp, 514.dp)
+                .offset(x = 15.dp, y = 205.dp)
+                .size(365.dp, 540.dp)
         ) {
-
 
             Box(
                 modifier = Modifier
@@ -214,14 +243,89 @@ fun CleanLiquidShowcase(modifier: Modifier = Modifier) {
                     )
                 }
 
+                LiquidGlassSurface(
+                    engine = engine,
+                    cornerRadius = 24.dp,
+                    refractionHeight = 22.dp,
+                    refractionAmount = 22.dp,
+                    edgeFill = 0.20f,
+                    isInteractive = false,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .offset(x = 0.dp, y = 50.dp)
+                        .size(375.dp, 100.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .offset(x = 10.dp, y = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        LiquidGlassIconButton(
+                            engine = engine,
+                            iconRes = R.drawable.plus_math,
+                            iconDescription = "mais",
+                            size = 28.dp,
+                            greenCircleSize = 20.dp,
+                            iconSize = 15.dp,
+                            glassOpacity = 1.6f,
+                            centerFill = 0.12f,
+                            edgeFill = 0.15f,
+                            isInteractive = false
+                        )
 
+                        Text(
+                            text = "Entrar com código",
+                            fontSize = 17.sp,
+                            fontFamily = AliceFontFamily,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF344530)
+                        )
+                    }
 
+                    Text(
+                        text = "Recebeu um convite? Participe de uma comunidade",
+                        fontSize = 15.sp,
+                        fontFamily = AliceFontFamily,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF344530),
+                        modifier = Modifier
+                            .offset(x = 50.dp, y = 40.dp)
+                    )
+                }
             }
         }
 
-        // ====================================================================
-        // CAMPO DE TEXTO COM LIQUID GLASS
-        // ====================================================================
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .offset(x = 0.dp, y = alturaGrupo)
+                .size(width = 310.dp, height = 40.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            LiquidGlassIconButton(
+                engine = engine,
+                iconRes = R.drawable.pesquisar,
+                iconDescription = "pesquisar",
+                size = 40.dp,
+                greenCircleSize = 29.dp,
+                iconSize = 15.dp,
+                glassOpacity = 1.6f,
+                centerFill = 0.12f,
+                edgeFill = 0.15f,
+                isInteractive = false
+            )
+
+            Text(
+                text = "Encontrar instituição",
+                fontSize = 22.sp,
+                fontFamily = AliceFontFamily,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color(0xFF344530)
+            )
+        }
 
         LiquidGlassSurface(
             engine = engine,
@@ -230,9 +334,9 @@ fun CleanLiquidShowcase(modifier: Modifier = Modifier) {
             refractionAmount = 14.dp,
             isInteractive = false,
             modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = 220.dp, x = (-30).dp)
-                .size(240.dp, 51.7.dp)
+                .align(Alignment.TopCenter)
+                .offset(x = 0.dp, y = alturaGrupo + 56.dp)
+                .size(310.dp, 51.7.dp)
         ) {
 
             OutlinedTextField(
@@ -241,9 +345,9 @@ fun CleanLiquidShowcase(modifier: Modifier = Modifier) {
 
                 placeholder = {
                     Text(
-                        text = "Escreva uma mensagem",
+                        text = "O que você está procurando?",
                         fontFamily = AliceFontFamily,
-                        fontSize = 14.5.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = Color(0xFF2C3E35).copy(alpha = 0.7f)
                     )
@@ -253,9 +357,8 @@ fun CleanLiquidShowcase(modifier: Modifier = Modifier) {
                 leadingIcon = {
                     LiquidGlassIconButton(
                         engine = engine,
-                        iconRes = R.drawable.leaf,
-                        iconDescription = "Folha",
-                        onClick = { /* Ação do ícone, se necessário */ },
+                        iconRes = R.drawable.pesquisar,
+                        iconDescription = "pesquisar",
                         size = 32.dp,
                         greenCircleSize = 23.dp,
                         iconSize = 15.dp,
@@ -279,45 +382,21 @@ fun CleanLiquidShowcase(modifier: Modifier = Modifier) {
             )
         }
 
-        // ====================================================================
-        // BOTÃO DE ENVIAR
-        // ====================================================================
-
-        LiquidGlassIconButton(
-            engine = engine,
-            iconRes = R.drawable.paper_plane,
-            iconDescription = "Avião de papel",
-            onClick = {
-                // Aqui ficará a ação de enviar a mensagem.
-            },
-            size = 45.dp,
-            greenCircleSize = 33.dp,
-            iconSize = 20.dp,
-            glassOpacity = 1.2f,
-            centerFill = 0.12f,
-            edgeFill = 0.15f,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .offset(x = (-66).dp, y = (-182).dp)
-        )
-
-        // ====================================================================
-        // AVISO INFERIOR
-        // ====================================================================
-
-        Text(
-            text = "Esta é uma conversa com um chatbot controlado\n              por ia e não com uma pessoa real.",
-            color = Color(0xFF344530),
-            fontSize = 12.sp,
-            lineHeight = 15.sp,
-            fontWeight = FontWeight.ExtraBold,
-            fontFamily = AliceFontFamily,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .offset(y = (-140).dp)
-        )
+        instituicoes.forEachIndexed { indice, instituicao ->
+            CardInstituicao(
+                engine = engine,
+                instituicao = instituicao,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .offset(
+                        x = 0.dp,
+                        y = alturaGrupo + 124.dp + (104.dp * indice)
+                    )
+            )
+        }
     }
 }
+
 
 // ============================================================================
 // BOTÃO REUTILIZÁVEL: LIQUID GLASS + CÍRCULO VERDE + ÍCONE
@@ -468,6 +547,116 @@ fun LiquidActionButton(
 // ============================================================================
 // COMPONENTE PRINCIPAL LIQUID GLASS
 // ============================================================================
+@Composable
+fun CardInstituicao(
+    engine: LiquidBackdropEngine,
+    instituicao: Instituicao,
+    modifier: Modifier = Modifier
+) {
+    val integrantesFormatado = NumberFormat
+        .getInstance(Locale.forLanguageTag("pt-BR"))
+        .format(instituicao.integrantes)
+
+    LiquidGlassSurface(
+        engine = engine,
+        cornerRadius = 24.dp,
+        refractionHeight = 22.dp,
+        refractionAmount = 22.dp,
+        edgeFill = 0.20f,
+        isInteractive = false,
+        modifier = modifier.size(width = 310.dp, height = 88.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.6f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = instituicao.logoRes),
+                    contentDescription = instituicao.nome,
+                    modifier = Modifier
+                        .size(46.dp)
+                        .clip(CircleShape)
+                )
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = instituicao.nome,
+                        fontSize = 17.sp,
+                        fontFamily = AliceFontFamily,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF344530),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+
+                    if (instituicao.verificada) {
+                        Image(
+                            painter = painterResource(id = R.drawable.verificado),
+                            contentDescription = "Verificada",
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+                }
+
+                Text(
+                    text = "${instituicao.tipo} • ${instituicao.cidade}",
+                    fontSize = 12.sp,
+                    fontFamily = AliceFontFamily,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(0xFF344530).copy(alpha = 0.75f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.integrantes),
+                        contentDescription = "Integrantes",
+                        modifier = Modifier.size(16.dp)
+                    )
+
+                    Text(
+                        text = integrantesFormatado,
+                        fontSize = 12.sp,
+                        fontFamily = AliceFontFamily,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF344530)
+                    )
+
+                    Text(
+                        text = "Integrantes",
+                        fontSize = 12.sp,
+                        fontFamily = AliceFontFamily,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF344530).copy(alpha = 0.75f)
+                    )
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun LiquidGlassSurface(
