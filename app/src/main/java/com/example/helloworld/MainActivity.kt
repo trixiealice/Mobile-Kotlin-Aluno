@@ -22,6 +22,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
@@ -89,9 +90,16 @@ import android.graphics.Rect as AndroidRect
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.zIndex
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import java.text.NumberFormat
 import java.util.Locale
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 
 val AliceFontFamily = FontFamily(
     Font(R.font.alice_regular, FontWeight.Normal, FontStyle.Normal)
@@ -130,32 +138,12 @@ class MainActivity : ComponentActivity() {
 // TELA PRINCIPAL
 // ============================================================================
 
+
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun CleanLiquidShowcase(modifier: Modifier = Modifier) {
-
-    var textoDigitado by remember { mutableStateOf("") }
-    val alturaGrupo = 403.dp
-
-    val instituicoes = listOf(
-        Instituicao(
-            nome = "SENAI Jandira",
-            tipo = "Escola técnica",
-            cidade = "Jandira/SP",
-            integrantes = 6767,
-            verificada = true,
-            logoRes = R.drawable.senai
-        ),
-        Instituicao(
-            nome = "SENAI Jandira",
-            tipo = "Escola técnica",
-            cidade = "Jandira/SP",
-            integrantes = 6767,
-            verificada = true,
-            logoRes = R.drawable.senai
-        )
-    )
+    var codigoInstituicao by remember { mutableStateOf("") }
 
     val density = LocalDensity.current
     val context = LocalContext.current
@@ -196,38 +184,226 @@ fun CleanLiquidShowcase(modifier: Modifier = Modifier) {
             )
         }
 
+        val larguraCard = (maxWidth - 32.dp)
+            .coerceAtMost(370.dp)
+
+        val inicioCards = maxHeight * 0.20f
+        val espacamento = 22.dp
+
+        val alturaPrivacidade = (maxHeight * 0.19f)
+            .coerceIn(150.dp, 180.dp)
+
+        val alturaPrincipal = (
+                maxHeight - inicioCards -
+                        espacamento - alturaPrivacidade - 20.dp
+                ).coerceAtMost(500.dp).coerceAtLeast(300.dp)
+
+        // CARD PRINCIPAL
+
         LiquidGlassSurface(
             engine = engine,
-            cornerRadius = 24.dp,
+            cornerRadius = 28.dp,
             refractionHeight = 22.dp,
             refractionAmount = 22.dp,
             edgeFill = 0.20f,
             isInteractive = false,
             modifier = Modifier
-                .align(Alignment.TopStart)
-                .offset(x = 15.dp, y = 205.dp)
-                .size(365.dp, 540.dp)
+                .align(Alignment.TopCenter)
+                .offset(y = inicioCards)
+                .size(
+                    width = larguraCard,
+                    height = alturaPrincipal
+                )
         ) {
 
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(24.dp)
+                    .padding(horizontal = 18.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Row(
+                @Composable
+                fun EtapaInstituicao(
+                    numero: String,
+                    titulo: String,
+                    ativa: Boolean,
+                    modifier: Modifier = Modifier
+                ) {
+                    Row(
+                        modifier = modifier
+                            .height(44.dp)
+                            .clip(RoundedCornerShape(50.dp))
+                            .background(Color.White.copy(alpha = 0.38f))
+                            .padding(horizontal = 7.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.35f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(23.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (ativa) Color(0xFF435F3F)
+                                        else Color(0xFF92917D)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = numero,
+                                    fontSize = 13.sp,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        Text(
+                            text = titulo,
+                            fontFamily = AliceFontFamily,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF344530),
+                            maxLines = 1
+                        )
+                    }
+                }
+
+
+                Spacer(modifier = Modifier.height(28.dp))
+
+                LiquidGlassIconButton(
+                    engine = engine,
+                    iconRes = R.drawable.chave,
+                    iconDescription = "Chave da instituição",
+                    size = 68.dp,
+                    greenCircleSize = 52.dp,
+                    iconSize = 30.dp,
+                    glassOpacity = 1.6f,
+                    centerFill = 0.12f,
+                    edgeFill = 0.15f,
+                    isInteractive = false
+                )
+
+                Spacer(modifier = Modifier.height(22.dp))
+
+
+                Text(
+                    text = "Encontre sua instituição",
+                    fontSize = 24.sp,
+                    fontFamily = AliceFontFamily,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(0xFF344530),
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "Digite o código que você recebeu da sua escola, curso ou comunidade.",
+                    fontSize = 17.sp,
+                    lineHeight = 21.sp,
+                    fontFamily = AliceFontFamily,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(0xFF606C58),
+                    textAlign = TextAlign.Center
+                )
+
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                LiquidGlassSurface(
+                    engine = engine,
+                    cornerRadius = 50.dp,
+                    refractionHeight = 14.dp,
+                    refractionAmount = 14.dp,
+                    edgeFill = 0.15f,
+                    isInteractive = false,
                     modifier = Modifier
-                        .align(Alignment.TopStart),
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+
+                    OutlinedTextField(
+                        value = codigoInstituicao,
+                        onValueChange = { codigoInstituicao = it },
+
+                        placeholder = {
+                            Text(
+                                text = "Digite seu código",
+                                fontFamily = AliceFontFamily,
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color(0xFF839087)
+                            )
+                        },
+
+                        leadingIcon = {
+                            LiquidGlassIconButton(
+                                engine = engine,
+                                iconRes = R.drawable.link,
+                                iconDescription = "Código",
+                                size = 36.dp,
+                                greenCircleSize = 27.dp,
+                                iconSize = 18.dp,
+                                glassOpacity = 1.6f,
+                                centerFill = 0.12f,
+                                edgeFill = 0.15f,
+                                isInteractive = false
+                            )
+                        },
+
+                        singleLine = true,
+
+                        modifier = Modifier.fillMaxSize(),
+
+                        shape = RoundedCornerShape(50.dp),
+
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedTextColor = Color(0xFF344530),
+                            unfocusedTextColor = Color(0xFF344530),
+                            cursorColor = Color(0xFF435F3F)
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Código da instituição",
+                    fontSize = 19.sp,
+                    fontFamily = AliceFontFamily,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(0xFF344530),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     LiquidGlassIconButton(
                         engine = engine,
-                        iconRes = R.drawable.museum,
-                        iconDescription = "Museu",
-                        size = 40.dp,
-                        greenCircleSize = 29.dp,
-                        iconSize = 15.dp,
+                        iconRes = R.drawable.informacao_icone,
+                        iconDescription = "Informação",
+                        size = 34.dp,
+                        greenCircleSize = 26.dp,
+                        iconSize = 17.dp,
                         glassOpacity = 1.6f,
                         centerFill = 0.12f,
                         edgeFill = 0.15f,
@@ -235,165 +411,184 @@ fun CleanLiquidShowcase(modifier: Modifier = Modifier) {
                     )
 
                     Text(
-                        text = "Minhas instituições",
-                        fontSize = 22.sp,
+                        text = "Não compartilhe esse código com pessoas de fora da instituição.",
+                        fontSize = 16.sp,
+                        lineHeight = 20.sp,
+                        fontFamily = AliceFontFamily,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF606C58),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(28.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Color(0xFF435F3F))
+                        .clickable {
+                            if (codigoInstituicao.isNotBlank()) {
+                                // Futuramente: procurar instituição
+                            }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+
+                    Text(
+                        text = "Procurar instituição",
+                        fontSize = 19.sp,
+                        fontFamily = AliceFontFamily,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+
+                    Image(
+                        painter = painterResource(
+                            id = R.drawable.arrow_right
+                        ),
+                        contentDescription = "Avançar",
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(end = 14.dp)
+                            .size(22.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+            }
+        }
+
+        // CARD DE PRIVACIDADE
+
+        LiquidGlassSurface(
+            engine = engine,
+            cornerRadius = 28.dp,
+            refractionHeight = 22.dp,
+            refractionAmount = 22.dp,
+            edgeFill = 0.20f,
+            isInteractive = false,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .offset(
+                    y = inicioCards +
+                            alturaPrincipal +
+                            espacamento
+                )
+                .size(
+                    width = larguraCard,
+                    height = alturaPrivacidade
+                )
+        ) {
+
+
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 18.dp
+                    ),
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+
+                LiquidGlassIconButton(
+                    engine = engine,
+                    iconRes = R.drawable.protecao,
+                    iconDescription = "Proteção",
+                    size = 52.dp,
+                    greenCircleSize = 40.dp,
+                    iconSize = 25.dp,
+                    glassOpacity = 1.6f,
+                    centerFill = 0.12f,
+                    edgeFill = 0.15f,
+                    isInteractive = false
+                )
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+
+                    Text(
+                        text = "Sua privacidade continua sendo sua",
+                        fontSize = 18.sp,
+                        lineHeight = 22.sp,
                         fontFamily = AliceFontFamily,
                         fontWeight = FontWeight.ExtraBold,
                         color = Color(0xFF344530)
                     )
-                }
-
-                LiquidGlassSurface(
-                    engine = engine,
-                    cornerRadius = 24.dp,
-                    refractionHeight = 22.dp,
-                    refractionAmount = 22.dp,
-                    edgeFill = 0.20f,
-                    isInteractive = false,
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .offset(x = 0.dp, y = 50.dp)
-                        .size(375.dp, 100.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .offset(x = 10.dp, y = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        LiquidGlassIconButton(
-                            engine = engine,
-                            iconRes = R.drawable.plus_math,
-                            iconDescription = "mais",
-                            size = 28.dp,
-                            greenCircleSize = 20.dp,
-                            iconSize = 15.dp,
-                            glassOpacity = 1.6f,
-                            centerFill = 0.12f,
-                            edgeFill = 0.15f,
-                            isInteractive = false
-                        )
-
-                        Text(
-                            text = "Entrar com código",
-                            fontSize = 17.sp,
-                            fontFamily = AliceFontFamily,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color(0xFF344530)
-                        )
-                    }
 
                     Text(
-                        text = "Recebeu um convite? Participe de uma comunidade",
-                        fontSize = 15.sp,
+                        text = "Ao entrar uma instituição, apenas informações gerais da comunidade são compartilhadas.",
+                        fontSize = 16.sp,
+                        lineHeight = 21.sp,
                         fontFamily = AliceFontFamily,
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF344530),
-                        modifier = Modifier
-                            .offset(x = 50.dp, y = 40.dp)
+                        color = Color(0xFF606C58)
                     )
                 }
             }
-        }
 
-        Row(
+        }
+    }
+}
+
+
+@Composable
+fun EtapaInstituicao(
+    numero: String,
+    titulo: String,
+    ativa: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .height(44.dp)
+            .clip(RoundedCornerShape(50.dp))
+            .background(Color.White.copy(alpha = 0.38f))
+            .padding(horizontal = 7.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        Box(
             modifier = Modifier
-                .align(Alignment.TopCenter)
-                .offset(x = 0.dp, y = alturaGrupo)
-                .size(width = 310.dp, height = 40.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                .size(30.dp)
+                .clip(CircleShape)
+                .background(Color.White.copy(alpha = 0.35f)),
+            contentAlignment = Alignment.Center
         ) {
-            LiquidGlassIconButton(
-                engine = engine,
-                iconRes = R.drawable.pesquisar,
-                iconDescription = "pesquisar",
-                size = 40.dp,
-                greenCircleSize = 29.dp,
-                iconSize = 15.dp,
-                glassOpacity = 1.6f,
-                centerFill = 0.12f,
-                edgeFill = 0.15f,
-                isInteractive = false
-            )
-
-            Text(
-                text = "Encontrar instituição",
-                fontSize = 22.sp,
-                fontFamily = AliceFontFamily,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFF344530)
-            )
-        }
-
-        LiquidGlassSurface(
-            engine = engine,
-            cornerRadius = 50.dp,
-            refractionHeight = 14.dp,
-            refractionAmount = 14.dp,
-            isInteractive = false,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .offset(x = 0.dp, y = alturaGrupo + 56.dp)
-                .size(310.dp, 51.7.dp)
-        ) {
-
-            OutlinedTextField(
-                value = textoDigitado,
-                onValueChange = { textoDigitado = it },
-
-                placeholder = {
-                    Text(
-                        text = "O que você está procurando?",
-                        fontFamily = AliceFontFamily,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF2C3E35).copy(alpha = 0.7f)
-                    )
-                },
-
-                singleLine = true,
-                leadingIcon = {
-                    LiquidGlassIconButton(
-                        engine = engine,
-                        iconRes = R.drawable.pesquisar,
-                        iconDescription = "pesquisar",
-                        size = 32.dp,
-                        greenCircleSize = 23.dp,
-                        iconSize = 15.dp,
-                        glassOpacity = 1.6f,
-                        centerFill = 0.12f,
-                        edgeFill = 0.15f,
-                        isInteractive = false
-                    )
-                },
-                modifier = Modifier.fillMaxSize(),
-                shape = RoundedCornerShape(50.dp),
-
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF435F3F),
-                    unfocusedBorderColor = Color.White.copy(alpha = 0f),
-                    focusedTextColor = Color(0xFF2C3E35),
-                    unfocusedTextColor = Color(0xFF2C3E35),
-                    unfocusedContainerColor = Color.White.copy(alpha = 0.45f),
-                    focusedContainerColor = Color.White.copy(alpha = 0.45f)
-                )
-            )
-        }
-
-        instituicoes.forEachIndexed { indice, instituicao ->
-            CardInstituicao(
-                engine = engine,
-                instituicao = instituicao,
+            Box(
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .offset(
-                        x = 0.dp,
-                        y = alturaGrupo + 124.dp + (104.dp * indice)
-                    )
-            )
+                    .size(23.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (ativa) Color(0xFF435F3F)
+                        else Color(0xFF92917D)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = numero,
+                    fontSize = 13.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
+
+        Text(
+            text = titulo,
+            fontFamily = AliceFontFamily,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = Color(0xFF344530),
+            maxLines = 1
+        )
     }
 }
 
